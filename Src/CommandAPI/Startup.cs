@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using CommandAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 namespace CommandAPI
 {
@@ -26,8 +27,14 @@ namespace CommandAPI
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<CommandContext>(opt =>
-            opt.UseSqlServer(Configuration.GetConnectionString("CommandAPISQLConection")));
+            var builder = new SqlConnectionStringBuilder();
+            builder.ConnectionString =
+            Configuration.GetConnectionString("CommandAPISQLConection");
+            builder.UserID = Configuration["UserID"];
+            builder.Password = Configuration["Password"];
+
+            services.AddDbContext<CommandContext>
+            (opt => opt.UseSqlServer(builder.ConnectionString));
 
             services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_2);
         }
